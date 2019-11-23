@@ -40,6 +40,69 @@ def send_image(path):
     pub = rospy.Publisher('/robot/xdisplay', Image, latch=True)
     pub.publish(msg)
 
+
+
+class W0(State):
+    def __init__(self):
+        State.__init__(self, outcomes=['success'])
+        
+        self.letter_W0 = {
+            'letter': {
+                      'left':  [0.0, 0.0, 0.00, 0.00,  0.00, 0.00, 0.0], 
+                      'right':  [0.000, 0.000, 0.000, 0.000, -0.000, 0.000, 0.000]
+                       } }
+        
+                         #DoF Key [s0,s1,e0,e1,w0,w1,w2]
+
+    def execute(self, userdata):
+        rospy.loginfo('intial wave!')
+        
+        barms.supervised_move(self.letter_W0)
+        sleep(2)
+        return 'success'
+
+class W1(State):
+    def __init__(self):
+        State.__init__(self, outcomes=['success'])
+        
+        self.letter_W1 = {
+            'letter': {
+                      'left':  [0.26384469551629114,-1.1792477306869118, -1.3023496889147164, -0.05062136600021865,   0.3271214030165645, 0.004218447166684887, 2.1840051467518578], 
+                      'right':  [0.26384469551629114,-1.1792477306869118, -1.3023496889147164, -0.05062136600021865,   0.3271214030165645, 0.004218447166684887, 2.1840051467518578]
+                       } }
+        
+                         #DoF Key [s0,s1,e0,e1,w0,w1,w2]
+
+    def execute(self, userdata):
+        rospy.loginfo('wave done!')
+        
+        barms.supervised_move(self.letter_W1)
+        sleep(2)
+        return 'success'
+
+class W12(State):
+    def __init__(self):
+        State.__init__(self, outcomes=['success'])
+        
+        self.letter_W12 = {
+            'letter': {
+                      'left':  [0.26384469551629114,-1.1792477306869118, -1.3023496889147164, -0.05062136600021865,   0.3271214030165645, 0.004218447166684887, 2.1840051467518578], 
+                      'right':  [0.26384469551629114,-1.1792477306869118, -1.3023496889147164, -0.05062136600021865,   0.3271214030165645, 0.004218447166684887, 2.1840051467518578]
+                       } }
+        
+                         #DoF Key [s0,s1,e0,e1,w0,w1,w2]
+
+    def execute(self, userdata):
+        rospy.loginfo('wave done!')
+        
+        barms.supervised_move(self.letter_W12)
+        sleep(2)
+        return 'success'
+
+
+
+
+
 class M(State):
     def __init__(self):
         State.__init__(self, outcomes=['success'])
@@ -148,9 +211,14 @@ if __name__ == '__main__':
         StateMachine.add('C', C(), transitions={'success':'M2'})
        	
 	
-        StateMachine.add('M2', M2(), transitions={'success':'ZERO'})
+        StateMachine.add('M2', M2(), transitions={'success':'W0'})
+
+	StateMachine.add('W0', W0(), transitions={'success':'W1'})
+	StateMachine.add('W1', W1(), transitions={'success':'Zero'})
+	StateMachine.add('Zero',Zero(), transitions={'success':'W12'})
+	StateMachine.add('W12', W12(), transitions={'success':'success'})
         ## wave 
-        StateMachine.add('ZERO', Zero(), transitions={'success':'success'})  
+        #StateMachine.add('ZERO', Zero(), transitions={'success':'success'})  
 
     sm.execute()
 
